@@ -4,8 +4,6 @@ import sys
 import os
 import re
 from Bio import SeqIO
-from concurrent.futures import ProcessPoolExecutor
-from multiprocessing import cpu_count
 
 def get_files_to_analyze(file_or_directory):
     """
