@@ -4,6 +4,8 @@ import sys
 import os
 import re
 from Bio import SeqIO
+from concurrent.futures import ProcessPoolExecutor
+from multiprocessing import cpu_count
 
 def get_files_to_analyze(file_or_directory):
     """
@@ -110,7 +112,7 @@ def format_files(files_list, output_dir):
                             if(score == max_score):
                                 #every time we see a max score we mark everything past that point for deletion
                                 window_size = length - index
-                        str = record.seq[0:(length-window_size+1)]
+                        str = record.seq[0:(length-window_size)]
                         print("Trimming {}, {} bases removed".format(record.id, (length-len(str))))
                     #searching front of file for garbage
                     length = len(str)
