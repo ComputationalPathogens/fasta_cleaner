@@ -36,21 +36,21 @@ def find_recurring_char(record, start, end):
     recur_char = 'X'
     #this is the density threshold for finding a garbage sequence
     #0.8 means that 80% of nucleotides must be the same to trigger a cut
-    perc_cut = 0.8
+    perc_cut = 0.75
     A_count = (record).count("A",start,end)
     T_count = (record).count("T",start,end)
     G_count = (record).count("G",start,end)
     C_count = (record).count("C",start,end)
     N_count = (record).count("N",start,end)
-    if(((A_count)/window)>perc_cut):
+    if(((A_count)/window)>=perc_cut):
         recur_char = 'A'
-    elif(((T_count)/window)>perc_cut):
+    elif(((T_count)/window)>=perc_cut):
         recur_char = 'T'
-    elif(((G_count)/window)>perc_cut):
+    elif(((G_count)/window)>=perc_cut):
         recur_char = 'G'
-    elif(((C_count)/window)>perc_cut):
+    elif(((C_count)/window)>=perc_cut):
         recur_char = 'C'
-    elif(((N_count)/window)>perc_cut):
+    elif(((N_count)/window)>=perc_cut):
         recur_char = 'N'
     return recur_char
 
@@ -90,7 +90,7 @@ def format_files(files_list, output_dir):
 
                     #search blocks at the end of the contig for a sequence with a high density of a
                     #specific nucleotide, if there are no garbage sequences, recur_char will be 'X'
-                    for i in range (30,310,20):
+                    for i in range (30,410,20):
                         recur_char = find_recurring_char(record.seq,length-i, length)
                         if(recur_char != 'X'):
                             window_size = i
@@ -113,12 +113,12 @@ def format_files(files_list, output_dir):
                                 #every time we see a max score we mark everything past that point for deletion
                                 window_size = length - index
                         str = record.seq[0:(length-window_size)]
-                        print("Trimming {}, {} bases removed".format(record.id, (length-len(str))))
+                        print("Trimming {}, {} mostly {} bases removed".format(record.id, (length-len(str)),recur_char),"from end")
                     #searching front of file for garbage
                     length = len(str)
                     recur_char ="X"
                     window_size =0
-                    for i in range (30,310,20):
+                    for i in range (30,410,20):
                         recur_char = find_recurring_char(record.seq,0,i)
                         if(recur_char != 'X'):
                             window_size = i
@@ -136,7 +136,7 @@ def format_files(files_list, output_dir):
                             if(score == max_score):
                                 window_size = index
                         str = record.seq[window_size+1:length-1]
-
+                        print("Trimming {}, {} mostly {} bases removed".format(record.id, (length-len(str)),recur_char),"from front")
                     record.seq=str
                     SeqIO.write(record, oh, "fasta")
 
